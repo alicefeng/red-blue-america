@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Crimson+Text" rel="stylesheet"> 
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+
+        <title>Red Blue America</title>
+    </head>
+    
+    <body>
+        <div class="container">
+    		<h1>The Political Divide at the State Level</h1>
+
+            <div class="text-center">
+                <div class="btn-group text-center" role="group" id="level_toggle" aria-label="map toggle">
+                    <button type="button" class="btn btn-default active">Upper Houses</button>
+                    <button type="button" class="btn btn-default">Lower Houses</button>
+                </div>
+            </div>
+            
+            <div class="row">
+                <svg class="legend">
+                    <circle class="result_circle" cx="10" cy="15" r="8" fill="#64b5f6"></circle><text x="22" y="18">Democrat</text>
+                    <circle class="result_circle" cx="110" cy="15" r="8" fill="#e57373"></circle><text x="122" y="18">Republican</text>
+                    <circle class="result_circle" cx="220" cy="15" r="8" fill="#fff176"></circle><text x="232" y="18">Third Party</text>
+                    <circle class="result_circle" cx="330" cy="15" r="8" fill="#90a4ae"></circle><text x="342" y="18">Independent</text>
+                    <circle class="result_circle" cx="440" cy="15" r="8" fill="#9575cd"></circle><text x="452" y="18">Multi-Party</text>
+                    <circle class="result_circle" cx="550" cy="15" r="8" stroke="#7a7a7a" fill=none></circle><text x="562" y="18">Vacant</text>
+                </svg>
+            </div>
+
+    		<div id="map">
+                <img src="img/sldu.svg" class="selected" width="960" height="600">
+                <img src="img/sldl.svg" width="960" height="600"> <!-- should add annotation that Nebraska and DC don't have lower houses -->
+            </div>
+
+            <div class="text-center">
+                <p>Note: DC and Nebraska do not have lower houses.</p>
+            </div>
+        </div>
+  	
+    	<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+		<script type="text/javascript" src="js/d3-tip-v0.6.7.js"></script>
+
+		<!--<script type="text/javascript" src="js/.js"></script>-->
+        <script>
+            $(document).ready(function() {
+                $("#level_toggle").on("click", "button", function() {
+                    $("#map img").removeClass("selected");
+
+                    var newImage = $(this).index();
+
+                    $("#map img").eq(newImage).addClass("selected");
+
+                    $("#level_toggle button").removeClass("active");
+                    $(this).addClass("active");
+                })
+            })
+        </script>
+
+    </body>
+
+</html>
