@@ -15,8 +15,9 @@
     
     <body>
         <div class="container">
-    		<h1>Red-Blue America: Local Edition</h1>
+    		<h1>Red and Blue America: Local Edition</h1>
             <h2>The Political Divide at the State Level</h2>
+            <p>The red and blue electoral college map was ubiquitous during the 2016 presidential election.  But such a map masks the divides within states.  Here is what the political divide looks like when we go within states and look at how voters selected their state legislators.</p>
 
             <div class="text-center">
                 <div class="btn-group text-center" role="group" id="level_toggle" aria-label="map toggle">
@@ -31,7 +32,7 @@
                     <circle class="result_circle" cx="110" cy="15" r="8" fill="#e57373"></circle><text x="122" y="18">Republican</text>
                     <circle class="result_circle" cx="220" cy="15" r="8" fill="#fff176"></circle><text x="232" y="18">Third Party</text>
                     <circle class="result_circle" cx="330" cy="15" r="8" fill="#90a4ae"></circle><text x="342" y="18">Independent</text>
-                    <circle class="result_circle" cx="440" cy="15" r="8" fill="#9575cd"></circle><text x="452" y="18">Multi-Party</text>
+                    <circle class="result_circle" cx="440" cy="15" r="8" fill="#9575cd"></circle><text x="452" y="18">Split-Party</text>
                     <circle class="result_circle" cx="550" cy="15" r="8" stroke="#7a7a7a" fill=none></circle><text x="562" y="18">Vacant</text>
                 </svg>
             </div>
@@ -45,7 +46,9 @@
                 <p>Note: DC and Nebraska do not have lower houses.</p>
             </div>
 
-            <canvas width="960" height="500"></canvas>
+            <div id="force">
+                <canvas width="960" height="600"></canvas>    
+            </div>
         </div>
   	
     	<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
