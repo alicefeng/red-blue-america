@@ -34,3 +34,14 @@ text {
 #map img.selected {
 	opacity: 1;
 }
+
+#force {
+	position: relative;
+	width: 960px;
+	height: 600px;
+	margin: 0 auto;
+}
+
+canvas {
+	margin: 20px 0px;
+}
