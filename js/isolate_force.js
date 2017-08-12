@@ -29,26 +29,69 @@ d3.json('data/state_upper_houses2.json', function(error, data) {
     d.party = d.party;
     d.sequence = d.sequence;
   });
-
+console.log(data.length);
   //var data2 = data.slice(0,500);
 
+// LAYOUT FOR UPPER HOUSES
   var simulation = d3.forceSimulation(data)  //make force layout - have to add adjustment factors due to drift at the edges of the canvas
-    .force("y", d3.forceY(function(d) { return mid_height(d) + (25 - d.state_index)/25 * 50; }))  // controls vertical displacement of the nodes
-    .force("democrat", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return mid_width(d) - (m_width / 8) + 40; }  // controls horizontal displacement of the nodes
-                                                       else if(d.state_index % 3 === 2) { return mid_width(d) - (m_width / 8) - 40; }
-                                                       else { return mid_width(d) - (m_width / 8); }}),
+    .force("y", d3.forceY(d => mid_height(d) + (25 - d.state_index)/25 * 50))  // controls vertical displacement of the nodes
+    .force("democrat", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 160; }  // controls horizontal displacement of the nodes
+                                                       else if(d.state_index % 3 === 2) { return 760; }
+                                                       else { return 455; }}),
                                          function(d) { return d.party === "D"; }))
-    .force("republican", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return mid_width(d) + (m_width / 8) + 40; }
-                                                       else if(d.state_index % 3 === 2) { return mid_width(d) + (m_width / 8) - 40; }
-                                                       else { return mid_width(d) + (m_width / 8); }}), 
+    .force("republican", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 210; }
+                                                       else if(d.state_index % 3 === 2) { return 810; }
+                                                       else { return 505; }}), 
                                          function(d) { return d.party === "R"; }))
-    .force("other", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return mid_width(d) + 40; }
-                                                       else if(d.state_index % 3 === 2) { return mid_width(d) - 40; }
-                                                       else { return mid_width(d); }}), 
-                                      function(d) { return (d.party === "I" || d.party === "Multi" || d.party === "Vacant" || d.party === "Third"); }))  
-    .force("charge", d3.forceManyBody().strength(-5))  // controls how spread out nodes in the same group are from each other
+    .force("independent", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 135; }
+                                                       else if(d.state_index % 3 === 2) { return 845; }
+                                                       else { return 430; }}), 
+                                      function(d) { return d.party === "I"; }))  
+    .force("multi", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 110; }
+                                                       else if(d.state_index % 3 === 2) { return 860; }
+                                                       else { return 405; }}), 
+                                      function(d) { return d.party === "Multi"; })) 
+    .force("vacant", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 185; }
+                                                       else if(d.state_index % 3 === 2) { return 785; }
+                                                       else { return 480; }}), 
+                                      function(d) { return d.party === "Vacant"; }))
+    .force("third", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 85; }
+                                                       else if(d.state_index % 3 === 2) { return 910; }
+                                                       else { return 480; }}), 
+                                      function(d) { return d.party === "Third"; })) 
+    .force("charge", d3.forceManyBody().strength(-3))  // controls how spread out nodes in the same group are from each other
     .on("tick", ticked); 
 
+/*  LAYOUT FOR LOWER HOUSES
+  var simulation = d3.forceSimulation(data)  //make force layout - have to add adjustment factors due to drift at the edges of the canvas
+    .force("y", d3.forceY(d => mid_height(d) + (25 - d.state_index)/25 * 100))  // controls vertical displacement of the nodes
+    .force("democrat", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 200; }  // controls horizontal displacement of the nodes
+                                                       else if(d.state_index % 3 === 2) { return 700; }
+                                                       else { return 455; }}),
+                                         function(d) { return d.party === "D"; }))
+    .force("republican", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 250; }
+                                                       else if(d.state_index % 3 === 2) { return 750; }
+                                                       else { return 505; }}), 
+                                         function(d) { return d.party === "R"; }))
+    .force("independent", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 175; }
+                                                       else if(d.state_index % 3 === 2) { return 775; }
+                                                       else { return 430; }}), 
+                                      function(d) { return d.party === "I"; }))  
+    .force("multi", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 150; }
+                                                       else if(d.state_index % 3 === 2) { return 800; }
+                                                       else { return 405; }}), 
+                                      function(d) { return d.party === "Multi"; })) 
+    .force("vacant", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 225; }
+                                                       else if(d.state_index % 3 === 2) { return 725; }
+                                                       else { return 480; }}), 
+                                      function(d) { return d.party === "Vacant"; }))
+    .force("third", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 125; }
+                                                       else if(d.state_index % 3 === 2) { return 850; }
+                                                       else { return 480; }}), 
+                                      function(d) { return d.party === "Third"; })) 
+    .force("charge", d3.forceManyBody().strength(-3))  // controls how spread out nodes in the same group are from each other
+    .on("tick", ticked); 
+*/
   function labelState(d) {
     context.font = "11px sans-serif";
     context.fillStyle = "black";
@@ -78,5 +121,5 @@ d3.json('data/state_upper_houses2.json', function(error, data) {
     var initialize = force.initialize;
     force.initialize = function() { initialize.call(force, data.filter(filter)); };
     return force;
-  }
+  } 
 });
