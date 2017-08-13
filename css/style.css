@@ -14,6 +14,10 @@ p {
 	margin: 20px auto;
 }
 
+#level_toggle {
+	margin: 20px auto;
+}
+
 .legend {
 	display: block;
 	width: 620px; 
@@ -49,10 +53,15 @@ text {
 #force {
 	position: relative;
 	width: 960px;
-	height: 600px;
+	height: 3400px;
 	margin: 0 auto;
 }
 
 canvas {
 	margin: 20px 0px;
+}
+
+#footer {
+	width: 700px;
+	margin: 10px auto;
 }
