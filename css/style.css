@@ -3,6 +3,17 @@ body {
 	background: #F6F6F6;
 }
 
+h1 {
+	text-align: center;
+	margin: 40px auto;
+}
+
+p {
+	width: 900px;
+	/*text-align: center;*/
+	margin: 20px auto;
+}
+
 .legend {
 	display: block;
 	width: 620px; 
