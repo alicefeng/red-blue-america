@@ -137,7 +137,7 @@ function select_lower() {
                                                          else { return 480; }}), 
                                         function(d) { return d.party === "Vacant"; }))
       .force("third", isolate(d3.forceX(function(d) { if(d.state_index % 3 === 0) { return 125; }
-                                                         else if(d.state_index % 3 === 2) { return 850; }
+                                                         else if(d.state_index % 3 === 2) { return 675; }
                                                          else { return 480; }}), 
                                         function(d) { return d.party === "Third"; })) 
       .force("charge", d3.forceManyBody().strength(-3))  // controls how spread out nodes in the same group are from each other
