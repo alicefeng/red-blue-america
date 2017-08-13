@@ -22,7 +22,7 @@ var color_scale = d3.scaleOrdinal()
 
 // function to label each state in the force layout
 function labelState(d) {
-  context.font = "11px sans-serif";
+  context.font = "12px Crimson Text serif";
   context.fillStyle = "black";
   context.textAlign = "center";
   context.fillText(d.state, mid_width(d), mid_height(d) - 80);
