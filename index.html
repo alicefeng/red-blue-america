@@ -20,8 +20,8 @@
 
             <div class="text-center">
                 <div class="btn-group text-center" role="group" id="level_toggle" aria-label="map toggle">
-                    <button type="button" class="btn btn-default active">Upper Houses</button>
-                    <button type="button" class="btn btn-default">Lower Houses</button>
+                    <button type="button" id="upper_houses" class="btn btn-default active">Upper Houses</button>
+                    <button type="button" id="lower_houses" class="btn btn-default">Lower Houses</button>
                 </div>
             </div>
             
@@ -63,6 +63,10 @@
 
                     $("#level_toggle button").removeClass("active");
                     $(this).addClass("active");
+
+                    if($(this).attr('id') == "lower_houses") select_lower(); // function to update map here
+                    else select_upper(); // function to update map here
+
                 })
             })
         </script>
