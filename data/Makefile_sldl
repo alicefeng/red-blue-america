@@ -1,0 +1,83 @@
+# Make svg of state lower legislative districts where the fill is color-coded by political party
+
+# need this line because otherwise you'll get an error due to there being parentheses in the PATH variable
+# see: https://superuser.com/questions/375029/make-interrupt-exception-caught
+SHELL=C:/Windows/System32/cmd.exe
+
+# need this line to force Make to execute all of the commands, otherwise it stops at the first one
+all : sldl_all.json sldl_all_albers.json sldl_all_albers.svg sldl_all.ndjson sldl_all-id.ndjson state_lower_houses.ndjson sldl_all-join.ndjson sldl_all-party.ndjson sldl_all-party.json sldl_all-color.ndjson sldl_all-color2.ndjson sldl_all-color3.ndjson sldl_all-color.svg sldl_all-topo.json sldl_all-simple-topo.json sldl_all-quantized-topo.json state_borders-topo2.json state_borders2.json sldl.svg
+
+# Convert shapefile of all districts into GeoJSON
+sldl_all.json: sldl_all.shp
+	shp2json sldl_all.shp -o sldl_all.json
+	
+# Apply geographic projection (IMPORTANT: original shapefile MUST have WGS84 projection for this to work!!)
+sldl_all_albers.json: sldl_all.json
+	geoproject "d3.geoAlbersUsa().fitSize([960, 600], d)" < sldl_all.json > sldl_all_albers.json
+	
+# Preview the projected geometry (optional)
+sldl_all_albers.svg: sldl_all_albers.json
+	geo2svg -w 960 -h 600 < sldl_all_albers.json > sldl_all_albers.svg
+
+# Convert GeoJSON into newline-delimited GeoJSON
+sldl_all.ndjson: sldl_all_albers.json
+	ndjson-split "d.features" < sldl_all_albers.json > sldl_all.ndjson
+
+# Create IDs for each feature using the district's GeoID (which is the State FIPS code + district number)
+sldl_all-id.ndjson: sldl_all.ndjson
+	ndjson-map "d.id = d.properties.GEOID, d" < sldl_all.ndjson > sldl_all-id.ndjson
+
+# Prepare the data JSON to be merged into the GeoJSON
+state_lower_houses.ndjson: state_lower_houses.json
+	ndjson-split < state_lower_houses.json > state_lower_houses.ndjson
+
+# Join the data to the nd-GeoJSON
+sldl_all-join.ndjson: sldl_all-id.ndjson state_lower_houses.ndjson
+	ndjson-join "d.id" sldl_all-id.ndjson state_lower_houses.ndjson > sldl_all-join.ndjson
+
+# Include the political party in the GeoJSON Feature instead of as another element in the array (and delete the other unneeded other properties)
+sldl_all-party.ndjson: sldl_all-join.ndjson
+	ndjson-map "d[0].properties = {'party': d[1].party}, d[0]" < sldl_all-join.ndjson > sldl_all-party.ndjson
+
+# Convert back to GeoJSON (not sure why this step is needed?)
+sldl_all-party.json: sldl_all-party.ndjson
+	ndjson-reduce "p.features.push(d), p" "{type: 'FeatureCollection', features: []}" < sldl_all-party.ndjson > sldl_all-party.json
+
+# Set fill color of the GeoJSON based on party 
+sldl_all-color.ndjson: sldl_all-party.ndjson
+	ndjson-map -r d3 "(d.properties.fill = d3.scaleOrdinal().domain(['D', 'R', 'I', 'Multi', 'Vacant', 'Third']).range(['#64b5f6', '#e57373', '#90a4ae', '#9575cd', , '#fff176']) (d.properties.party), d)" < sldl_all-party.ndjson > sldl_all-color.ndjson
+
+# Set stroke and stroke-width for each legislative district
+sldl_all-color2.ndjson: sldl_all-color.ndjson
+	ndjson-map "(d.properties.stroke = 'white', d)" < sldl_all-color.ndjson > sldl_all-color2.ndjson
+
+sldl_all-color3.ndjson: sldl_all-color2.ndjson
+	ndjson-map "(d.properties.strokeWidth = 0.5, d)" < sldl_all-color2.ndjson > sldl_all-color3.ndjson
+
+# Convert nd-GeoJSON to SVG (optional)
+sldl_all-color.svg: sldl_all-color3.ndjson
+	geo2svg -n -p 1 -w 960 -h 600 < sldl_all-color3.ndjson > sldl_all-color.svg
+
+# Convert to TopoJSON
+sldl_all-topo.json: sldl_all-color3.ndjson
+	geo2topo -n tracts=sldl_all-color3.ndjson > sldl_all-topo.json
+
+# Toposimplify to remove coordinates and reduce filesize
+sldl_all-simple-topo.json: sldl_all-topo.json
+	toposimplify -p 1 -f < sldl_all-topo.json > sldl_all-simple-topo.json
+
+# Topoquantize (to remove digits) and delta-encode (so each successive x,y-value is relative to the previous one) which reduces filesize even more
+sldl_all-quantized-topo.json: sldl_all-simple-topo.json
+	topoquantize 1e5 < sldl_all-simple-topo.json > sldl_all-quantized-topo.json
+
+# Overlay state borders to make the map easier to understand
+state_borders-topo2.json: sldl_all-quantized-topo.json
+	topomerge states=tracts -k "d.id.slice(0, 2)" < sldl_all-quantized-topo.json > state_borders-topo2.json
+
+# Remove the exterior borders and only keep internal ones to reduce visual clutter
+state_borders2.json: state_borders-topo2.json
+	topomerge --mesh -f "a !== b" states=states < state_borders-topo2.json > state_borders2.json
+
+# Convert to SVG (have to use && instead of ; on windows) (also need to use split-line GeoJSON to make svg)
+sldl.svg: state_borders2.json
+	(topo2geo tracts=- < state_borders2.json | ndjson-split "d.features" && topo2geo states=- < state_borders2.json | ndjson-map "d.properties = {'stroke': 'white', 'stroke-width': 2, 'stroke-opacity': 0.8}, d") | geo2svg -n --stroke none -p 1 -w 960 -h 600 > sldl.svg
