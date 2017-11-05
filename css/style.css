@@ -9,9 +9,9 @@ h1 {
 }
 
 p {
-	width: 900px;
-	/*text-align: center;*/
+	width: 500px;
 	margin: 20px auto;
+	font-size: 18px;
 }
 
 #level_toggle {
